@@ -4,8 +4,7 @@ import Wordle from "./components/Wordle";
 function App() {
   return (
     <>
-      <h1>Find the Word</h1>
-      <p>The game you were waiting for</p>
+      <h1>WordQuest</h1>
       <Wordle />
     </>
   );

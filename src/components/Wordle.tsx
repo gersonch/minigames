@@ -3,73 +3,143 @@ import { words } from "../mockups/words";
 import { Row } from "./Row";
 
 export default function Wordle() {
+  const maxAttempts = 6;
   const [randomWord, setRandomWord] = useState<string>("");
-  const [inputValues, setInputValues] = useState<string[]>([]);
+  const [attempts, setAttempts] = useState<string[][]>([]);
+  const [highlightIndices, setHighlightIndices] = useState<number[][]>(
+    Array(maxAttempts)
+      .fill(null)
+      .map(() => [])
+  );
+  const [lowHighlightIndices, setLowHighlightIndices] = useState<number[][]>(
+    Array(maxAttempts)
+      .fill(null)
+      .map(() => [])
+  );
+  const [currentAttempt, setCurrentAttempt] = useState<number>(0);
   const [isCorrect, setIsCorrect] = useState<boolean>(false);
-  const [highlightIndices, setHighlightIndices] = useState<number[]>([]); // Guardamos los índices correctos
-  const [lowHighlightIndices, setLowHighlightIndices] = useState<number[]>([]); // Guardamos los índices que estan pero no en el lugar correcto
 
   useEffect(() => {
     const word = words[Math.floor(Math.random() * words.length)];
     setRandomWord(word);
-    setInputValues(new Array(word.length).fill(""));
+
+    const emptyRows = Array(maxAttempts)
+      .fill(null)
+      .map(() => Array(word.length).fill(""));
+    setAttempts(emptyRows);
   }, []);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    index: number
+    row: number,
+    col: number
   ) => {
-    const newValues = [...inputValues];
-    newValues[index] = e.target.value;
-    setInputValues(newValues);
+    if (row !== currentAttempt) return;
+    const newAttempts = [...attempts];
+    newAttempts[row][col] = e.target.value;
+    setAttempts(newAttempts);
   };
 
   const handleSubmit = () => {
-    if (inputValues.join("").toLowerCase() === randomWord.toLowerCase()) {
+    if (currentAttempt >= maxAttempts) return;
+    const currentRow = attempts[currentAttempt].join("").toLowerCase();
+    if (currentRow.length < randomWord.length) return;
+
+    if (currentRow === randomWord.toLowerCase()) {
       setIsCorrect(true);
-      setHighlightIndices([...Array(randomWord.length).keys()]); // Si es correcta, resaltar todo
+      setHighlightIndices((prev) => {
+        const newIndices = [...prev];
+        newIndices[currentAttempt] = [...Array(randomWord.length).keys()];
+        return newIndices;
+      });
       return;
     }
 
-    // Identificar los índices correctos
-    const correctIndices = [];
-    const lowCorrectIndices = [];
+    const correctIndices: number[] = [];
+    const lowCorrectIndices: number[] = [];
 
+    // Contar ocurrencias de cada letra en la palabra objetivo
+    const letterCount: Record<string, number> = {};
+    for (const letter of randomWord.toLowerCase()) {
+      letterCount[letter] = (letterCount[letter] || 0) + 1;
+    }
+
+    // Primero marcar las posiciones correctas
     for (let i = 0; i < randomWord.length; i++) {
-      if (randomWord[i].toLowerCase() === inputValues[i]?.toLowerCase()) {
-        correctIndices.push(i);
-      }
       if (
-        randomWord.toLowerCase().includes(inputValues[i]?.toLowerCase()) &&
-        !correctIndices.includes(i)
+        randomWord[i].toLowerCase() ===
+        attempts[currentAttempt][i]?.toLowerCase()
       ) {
-        lowCorrectIndices.push(i);
+        correctIndices.push(i);
+        letterCount[randomWord[i].toLowerCase()] -= 1; // Reducir la cuenta disponible de esa letra
       }
     }
 
-    setHighlightIndices(correctIndices);
-    setLowHighlightIndices(lowCorrectIndices);
-    // Guardamos los índices correctos en el state
+    // Luego, marcar las letras que están en la palabra pero en la posición incorrecta
+    for (let i = 0; i < randomWord.length; i++) {
+      const letter = attempts[currentAttempt][i]?.toLowerCase();
+      if (
+        letter &&
+        letter !== randomWord[i].toLowerCase() && // No debe estar en la posición correcta
+        randomWord.toLowerCase().includes(letter) && // Debe estar en la palabra
+        letterCount[letter] > 0 // Aún hay más letras disponibles para marcar
+      ) {
+        lowCorrectIndices.push(i);
+        letterCount[letter] -= 1; // Reducir la cuenta disponible de esa letra
+      }
+    }
+
+    setHighlightIndices((prev) => {
+      const newIndices = [...prev];
+      newIndices[currentAttempt] = correctIndices;
+      return newIndices;
+    });
+
+    setLowHighlightIndices((prev) => {
+      const newIndices = [...prev];
+      newIndices[currentAttempt] = lowCorrectIndices;
+      return newIndices;
+    });
+
+    setCurrentAttempt((prev) => prev + 1);
   };
 
   return (
     <div>
       <h1>{randomWord}</h1>
+      <p>find the Word</p>
       <div>
-        {randomWord.split("").map((_, index) => (
-          <Row
-            key={index}
-            index={index}
-            inputValues={inputValues}
-            handleInputChange={handleInputChange}
-            // esto verifica si el índice está en el array de índices correctos (estos son los hig)
-            isCorrect={highlightIndices.includes(index)} // Verifica si el índice debe estar resaltado
-            isLowCorrect={lowHighlightIndices.includes(index)} // Verifica si el índice debe estar resaltado en gris
-          />
+        {attempts.map((attempt, rowIndex) => (
+          <div
+            key={rowIndex}
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              marginBottom: "5px",
+            }}
+          >
+            {attempt.map((_, colIndex) => (
+              <Row
+                key={colIndex}
+                index={colIndex}
+                inputValues={attempts[rowIndex]}
+                handleInputChange={(e) =>
+                  handleInputChange(e, rowIndex, colIndex)
+                }
+                isCorrect={highlightIndices[rowIndex]?.includes(colIndex)}
+                isLowCorrect={lowHighlightIndices[rowIndex]?.includes(colIndex)}
+              />
+            ))}
+          </div>
         ))}
       </div>
-      {isCorrect ? <p>¡Correcto! 🎉</p> : <p>¡Inténtalo de nuevo! ❌</p>}
-      <button onClick={handleSubmit}>✅</button>
+      {isCorrect ? <p>¡Correcto! 🎉</p> : <p></p>}
+      <button
+        onClick={handleSubmit}
+        disabled={currentAttempt >= maxAttempts || isCorrect}
+      >
+        ✅
+      </button>
     </div>
   );
 }
