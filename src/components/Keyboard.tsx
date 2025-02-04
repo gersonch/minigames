@@ -1,4 +1,5 @@
 import "./keyboard_styles.css";
+import { keys } from "./keys";
 interface KeyboardProps {
   onKeyPress: (key: string) => void;
   disabled: boolean;
@@ -10,39 +11,7 @@ export function Keyboard({
   disabled,
   deactivatedKeys,
 }: KeyboardProps) {
-  const keys = [
-    "q",
-    "w",
-    "e",
-    "r",
-    "t",
-    "y",
-    "u",
-    "i",
-    "o",
-    "p",
-    "a",
-    "s",
-    "d",
-    "f",
-    "g",
-    "h",
-    "j",
-    "k",
-    "l",
-    "ñ",
-    "✅",
-    "z",
-    "x",
-    "c",
-    "v",
-    "b",
-    "n",
-    "m",
-    "←",
-  ];
-
-  const handleClick = (e) => {
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     const key = e.currentTarget.innerText.trim();
     console.log("Tecla presionada en teclado:", key);
     if (key && !deactivatedKeys.has(key)) onKeyPress(key);
