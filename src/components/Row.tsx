@@ -21,13 +21,14 @@ export function Row({
       type="text"
       maxLength={1}
       style={{
-        width: "2rem",
-        height: "2rem",
+        width: "3rem",
+        height: "3rem",
         textAlign: "center",
         fontSize: "1.5rem",
-        margin: "0.5rem",
+        margin: "0 0.2rem",
+        color: "white",
         background: isCorrect ? "lightgreen" : isLowCorrect ? "gray" : "black", // Si es correcto, verde; si no, blanco
-        border: "1px solid black",
+        border: "none",
       }}
       value={inputValues[index] || ""}
       onChange={(e) => handleInputChange(e, index)}

@@ -106,7 +106,7 @@ export default function Wordle() {
 
   return (
     <div>
-      <h1>{randomWord}</h1>
+      <h1 style={{ display: "none" }}>{randomWord}</h1>
       <p>find the Word</p>
       <div>
         {attempts.map((attempt, rowIndex) => (

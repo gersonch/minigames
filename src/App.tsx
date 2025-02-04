@@ -1,4 +1,5 @@
 import "./App.css";
+import VirtualKeyboard from "./components/Keyboard";
 import Wordle from "./components/Wordle";
 
 function App() {
@@ -6,6 +7,7 @@ function App() {
     <>
       <h1>WordQuest</h1>
       <Wordle />
+      <VirtualKeyboard />
     </>
   );
 }

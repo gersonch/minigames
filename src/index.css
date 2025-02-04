@@ -3,7 +3,6 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
 
@@ -11,6 +10,13 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+.hg-button {
+  width: 3rem !important;
+}
+.myCustomTheme .hg-button {
+  background-color: rgb(92, 92, 92) !important;
+  color: white;
 }
 
 a {
