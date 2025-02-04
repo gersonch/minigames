@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { words } from "../mockups/words";
-import { Row } from "./Row";
+import { Row } from "../components/Row";
+import { Keyboard } from "../components/Keyboard";
 
 export default function Wordle() {
   const maxAttempts = 6;
@@ -17,7 +18,11 @@ export default function Wordle() {
       .map(() => [])
   );
   const [currentAttempt, setCurrentAttempt] = useState<number>(0);
+  const [currentLetterIndex, setCurrentLetterIndex] = useState<number>(0);
   const [isCorrect, setIsCorrect] = useState<boolean>(false);
+  const [deactivatedKeys, setDeactivatedKeys] = useState<Set<string>>(
+    new Set()
+  );
 
   useEffect(() => {
     const word = words[Math.floor(Math.random() * words.length)];
@@ -101,7 +106,39 @@ export default function Wordle() {
       return newIndices;
     });
 
+    // Marcar letras no existentes en la palabra como desactivadas
+    const lettersInAttempt = new Set(
+      attempts[currentAttempt].map((letter) => letter.toLowerCase())
+    );
+    const newDeactivatedKeys = new Set(deactivatedKeys);
+    lettersInAttempt.forEach((letter) => {
+      if (!randomWord.toLowerCase().includes(letter)) {
+        newDeactivatedKeys.add(letter);
+      }
+    });
+
+    setDeactivatedKeys(newDeactivatedKeys);
+
     setCurrentAttempt((prev) => prev + 1);
+  };
+
+  const handleKeyPress = (key: string) => {
+    if (isCorrect || currentAttempt >= maxAttempts) return;
+
+    // Si el botón "✅" es presionado, se envía el intento
+    if (key === "✅") {
+      if (isCorrect || currentAttempt >= maxAttempts) return;
+      handleSubmit();
+      return;
+    }
+
+    // Si la tecla presionada no está desactivada, se escribe en el input
+    if (!deactivatedKeys.has(key)) {
+      const newAttempts = [...attempts];
+      newAttempts[currentAttempt][currentLetterIndex] = key;
+      setAttempts(newAttempts);
+      setCurrentLetterIndex((prevIndex) => (prevIndex + 1) % randomWord.length);
+    }
   };
 
   return (
@@ -134,12 +171,12 @@ export default function Wordle() {
         ))}
       </div>
       {isCorrect ? <p>¡Correcto! 🎉</p> : <p></p>}
-      <button
-        onClick={handleSubmit}
+
+      <Keyboard
+        onKeyPress={handleKeyPress}
         disabled={currentAttempt >= maxAttempts || isCorrect}
-      >
-        ✅
-      </button>
+        deactivatedKeys={deactivatedKeys}
+      />
     </div>
   );
 }

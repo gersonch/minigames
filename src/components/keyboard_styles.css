@@ -1,0 +1,62 @@
+/* Contenedor principal del teclado */
+.keyboard {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  grid-gap: 8px;
+  justify-items: center;
+  margin: 20px auto;
+  max-width: 500px;
+}
+
+/* Estilo general de las teclas */
+.key {
+  width: 50px;
+  height: 50px;
+  font-size: 20px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  background-color: #444444;
+  color: #ffffff;
+  transition: background-color 0.2s, transform 0.1s;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Teclas especiales, como ✅ */
+.special {
+  background-color: #444444;
+  color: rgb(36, 36, 36);
+}
+
+.key:hover {
+  background-color: rgb(92, 92, 92);
+  transform: scale(1.05);
+}
+
+/* Teclas desactivadas (letras que no existen en la palabra) */
+.key:disabled {
+  background-color: #242424;
+  color: #000000;
+  cursor: not-allowed;
+}
+
+/* Estilo para las teclas desactivadas en el caso de letras no existentes */
+.key.disabled {
+  background-color: #000000;
+  color: #6b6b6b;
+}
+
+/* Estilo para teclas presionadas */
+.key:active {
+  transform: scale(0.95);
+}
+
+/* Filas del teclado */
+.keyboard-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
