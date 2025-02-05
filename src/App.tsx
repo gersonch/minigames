@@ -1,5 +1,4 @@
 import "./App.css";
-
 import Wordle from "./views/Wordle";
 
 function App() {

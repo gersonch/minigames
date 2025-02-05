@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import { words } from "../mockups/words";
 import { Keyboard } from "../components/Keyboard";
 import { GameBoard } from "../components/GameBoard";
+import { getWordOfTheDay } from "../lib/getWordOfTheDay";
 
 export default function Wordle() {
   const maxAttempts = 6;
-  const [randomWord, setRandomWord] = useState<string>("");
+  const [randomWord, setRandomWord] = useState<string | null>(""); // Aseguramos que el tipo sea string | null
   const [attempts, setAttempts] = useState<string[][]>([]);
   const [highlightIndices, setHighlightIndices] = useState<number[][]>(
     Array(maxAttempts)
@@ -25,14 +25,23 @@ export default function Wordle() {
   );
 
   useEffect(() => {
-    const word = words[Math.floor(Math.random() * words.length)];
-    setRandomWord(word);
+    const fetchWord = async () => {
+      const data = await getWordOfTheDay();
+      setRandomWord(data.word); // Actualiza el estado de randomWord con la palabra del día
+    };
 
-    const emptyRows = Array(maxAttempts)
-      .fill(null)
-      .map(() => Array(word.length).fill(""));
-    setAttempts(emptyRows);
-  }, []);
+    fetchWord(); // Llamamos a la función para obtener la palabra
+  }, [randomWord]); // Se ejecuta una sola vez cuando se monta el componente
+
+  useEffect(() => {
+    if (randomWord) {
+      // Solo crea las filas de intentos cuando ya tenemos la palabra del día
+      const emptyRows = Array(maxAttempts)
+        .fill(null)
+        .map(() => Array(randomWord.length).fill(""));
+      setAttempts(emptyRows);
+    }
+  }, [randomWord]); // Este useEffect depende de randomWord
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -47,6 +56,7 @@ export default function Wordle() {
 
   const handleSubmit = () => {
     if (currentAttempt >= maxAttempts) return;
+    if (!randomWord) return;
     const currentRow = attempts[currentAttempt].join("").toLowerCase();
     if (currentRow.length < randomWord.length) return;
 
@@ -63,34 +73,31 @@ export default function Wordle() {
     const correctIndices: number[] = [];
     const lowCorrectIndices: number[] = [];
 
-    // Contar ocurrencias de cada letra en la palabra objetivo
     const letterCount: Record<string, number> = {};
     for (const letter of randomWord.toLowerCase()) {
       letterCount[letter] = (letterCount[letter] || 0) + 1;
     }
 
-    // Primero marcar las posiciones correctas
     for (let i = 0; i < randomWord.length; i++) {
       if (
         randomWord[i].toLowerCase() ===
         attempts[currentAttempt][i]?.toLowerCase()
       ) {
         correctIndices.push(i);
-        letterCount[randomWord[i].toLowerCase()] -= 1; // Reducir la cuenta disponible de esa letra
+        letterCount[randomWord[i].toLowerCase()] -= 1;
       }
     }
 
-    // Luego, marcar las letras que están en la palabra pero en la posición incorrecta
     for (let i = 0; i < randomWord.length; i++) {
       const letter = attempts[currentAttempt][i]?.toLowerCase();
       if (
         letter &&
-        letter !== randomWord[i].toLowerCase() && // No debe estar en la posición correcta
-        randomWord.toLowerCase().includes(letter) && // Debe estar en la palabra
-        letterCount[letter] > 0 // Aún hay más letras disponibles para marcar
+        letter !== randomWord[i].toLowerCase() &&
+        randomWord.toLowerCase().includes(letter) &&
+        letterCount[letter] > 0
       ) {
         lowCorrectIndices.push(i);
-        letterCount[letter] -= 1; // Reducir la cuenta disponible de esa letra
+        letterCount[letter] -= 1;
       }
     }
 
@@ -106,7 +113,6 @@ export default function Wordle() {
       return newIndices;
     });
 
-    // Marcar letras no existentes en la palabra como desactivadas
     const lettersInAttempt = new Set(
       attempts[currentAttempt].map((letter) => letter.toLowerCase())
     );
@@ -123,16 +129,13 @@ export default function Wordle() {
   };
 
   const handleKeyPress = (key: string) => {
-    if (isCorrect || currentAttempt >= maxAttempts) return;
+    if (isCorrect || currentAttempt >= maxAttempts || !randomWord) return;
 
-    // Si el botón "✅" es presionado, se envía el intento
     if (key === "✅") {
-      if (isCorrect || currentAttempt >= maxAttempts) return;
       handleSubmit();
       return;
     }
 
-    // Si la tecla presionada no está desactivada, se escribe en el input
     if (!deactivatedKeys.has(key)) {
       const newAttempts = [...attempts];
       newAttempts[currentAttempt][currentLetterIndex] = key;
@@ -145,19 +148,24 @@ export default function Wordle() {
     <div>
       <h1 style={{ display: "none" }}>{randomWord}</h1>
       <p>find the Word</p>
-      <GameBoard
-        attempts={attempts}
-        highlightIndices={highlightIndices}
-        lowHighlightIndices={lowHighlightIndices}
-        handleInputChange={handleInputChange}
-      />
-      {isCorrect ? <p>¡Correcto! 🎉</p> : <p></p>}
-
-      <Keyboard
-        onKeyPress={handleKeyPress}
-        disabled={currentAttempt >= maxAttempts || isCorrect}
-        deactivatedKeys={deactivatedKeys}
-      />
+      {randomWord ? (
+        <>
+          <GameBoard
+            attempts={attempts}
+            highlightIndices={highlightIndices}
+            lowHighlightIndices={lowHighlightIndices}
+            handleInputChange={handleInputChange}
+          />
+          {isCorrect ? <p>¡Correcto! 🎉</p> : <p></p>}
+          <Keyboard
+            onKeyPress={handleKeyPress}
+            disabled={currentAttempt >= maxAttempts || isCorrect}
+            deactivatedKeys={deactivatedKeys}
+          />
+        </>
+      ) : (
+        <p>Loading word of the day...</p>
+      )}
     </div>
   );
 }
