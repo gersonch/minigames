@@ -18,7 +18,7 @@ export function GameBoard({
   handleInputChange,
 }: GameBoardProps) {
   return (
-    <div>
+    <div className="">
       {attempts.map((attempt, rowIndex) => (
         <div
           key={rowIndex}

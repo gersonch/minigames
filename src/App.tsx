@@ -1,12 +1,14 @@
 import "./App.css";
+import { Sidebar } from "./components/Sidebar";
 import Wordle from "./views/Wordle";
 
 function App() {
   return (
     <>
-      <h1>WordQuest</h1>
-      <Wordle />
-      <p>dev</p>
+      <section>
+        <Sidebar />
+        <Wordle />
+      </section>
     </>
   );
 }

@@ -2,7 +2,7 @@
 .keyboard {
   display: grid;
   grid-template-columns: repeat(10, 1fr);
-  grid-gap: 8px;
+  grid-gap: 4px;
   justify-items: center;
   margin: 20px auto;
   max-width: 500px;
@@ -10,9 +10,6 @@
 
 /* Estilo general de las teclas */
 .key {
-  width: 50px;
-  height: 50px;
-  font-size: 20px;
   font-weight: bold;
   border: none;
   border-radius: 8px;

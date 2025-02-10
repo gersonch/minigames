@@ -145,11 +145,11 @@ export default function Wordle() {
   };
 
   return (
-    <div>
+    <div className="items-center justify-center flex flex-col max-w-sm mx-auto px-4 py-8 gap-y-2">
       <h1 style={{ display: "none" }}>{randomWord}</h1>
-      <p>find the Word</p>
       {randomWord ? (
         <>
+          <h1 className="font-bold">Wordle</h1>
           <GameBoard
             attempts={attempts}
             highlightIndices={highlightIndices}
@@ -157,11 +157,13 @@ export default function Wordle() {
             handleInputChange={handleInputChange}
           />
           {isCorrect ? <p>¡Correcto! 🎉</p> : <p></p>}
-          <Keyboard
-            onKeyPress={handleKeyPress}
-            disabled={currentAttempt >= maxAttempts || isCorrect}
-            deactivatedKeys={deactivatedKeys}
-          />
+          <div className="flex justify-center  ">
+            <Keyboard
+              onKeyPress={handleKeyPress}
+              disabled={currentAttempt >= maxAttempts || isCorrect}
+              deactivatedKeys={deactivatedKeys}
+            />
+          </div>
         </>
       ) : (
         <p>Loading word of the day...</p>
