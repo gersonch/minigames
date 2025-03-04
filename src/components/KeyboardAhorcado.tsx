@@ -58,7 +58,7 @@ export function KeyboardAhorcado({
               : styleButtons
           }
           onClick={handleClick}
-          disabled={isGameOver || failedAttempts >= tries}
+          disabled={isGameOver || failedAttempts >= tries || isWinner}
         >
           {letterStatus[letter] !== undefined && (
             <span className="absolute inset-0 flex items-center justify-center text-2xl">
