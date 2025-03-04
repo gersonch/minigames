@@ -3,13 +3,12 @@ import { useEffect, useState } from "react";
 export function KeyboardAhorcado({
   onLetterClick,
   letterStatus,
-  allLettersGuessed,
 }: {
   onLetterClick: (letter: string) => boolean;
   letterStatus: Record<string, boolean>;
   allLettersGuessed: boolean;
 }) {
-  const tries = 6;
+  const tries = 7;
   const letters = "abcdefghijklmnñopqrstuvwxyz".split("");
   const word = "ayudame";
 
@@ -54,12 +53,12 @@ export function KeyboardAhorcado({
         <button
           key={index}
           className={
-            isGameOver || allLettersGuessed
+            isGameOver || failedAttempts >= tries || isWinner
               ? `${styleButtons} opacity-25`
               : styleButtons
           }
           onClick={handleClick}
-          disabled={isGameOver || allLettersGuessed}
+          disabled={isGameOver || failedAttempts >= tries}
         >
           {letterStatus[letter] !== undefined && (
             <span className="absolute inset-0 flex items-center justify-center text-2xl">
