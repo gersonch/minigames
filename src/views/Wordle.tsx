@@ -27,7 +27,7 @@ export default function Wordle() {
   useEffect(() => {
     const fetchWord = async () => {
       const data = await getWordOfTheDay();
-      setRandomWord(data.word); // Actualiza el estado de randomWord con la palabra del día
+      setRandomWord(data); // Actualiza el estado de randomWord con la palabra del día
     };
 
     fetchWord(); // Llamamos a la función para obtener la palabra

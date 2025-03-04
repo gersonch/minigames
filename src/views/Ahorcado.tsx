@@ -1,10 +1,14 @@
 import { Body } from "../components/Body";
 import { KeyboardAhorcado } from "../components/KeyboardAhorcado";
 import { useEffect, useState } from "react";
+import { useWord } from "../store/useWord";
+import { useWordQuery } from "../lib/wordQuery";
 
 export function Ahorcado() {
-  const word = "ayudame";
-  const wordArray = word.split("");
+  const { data, isLoading, error } = useWordQuery();
+  const word = useWord((state) => state.word);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const wordArray = word ? word.split("") : [];
 
   const getInitialLetterStatus = () => {
     const savedStatus = localStorage.getItem("letterStatus");
@@ -25,7 +29,7 @@ export function Ahorcado() {
   useEffect(() => {
     const savedWord = localStorage.getItem("word");
 
-    if (savedWord !== word) {
+    if (savedWord && word !== word) {
       localStorage.clear(); // 🧹 Borra todo el almacenamiento
       localStorage.setItem("word", word); // Guarda la nueva palabra
       setLetterStatus({});
@@ -52,10 +56,14 @@ export function Ahorcado() {
     return isCorrect;
   };
 
-  const allLettersGuessed = wordArray.every((letter) =>
+  const allLettersGuessed = wordArray.every((letter: string) =>
     selectedLetter.includes(letter)
   );
 
+  if (isLoading) return <div>Cargando...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+  if (!word) return <div>No se pudo cargar la palabra.</div>;
+  console.log(data);
   return (
     <section className="flex justify-between w-full">
       <div className="flex flex-col items-center px-10">
