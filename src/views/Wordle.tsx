@@ -164,6 +164,7 @@ export default function Wordle() {
               deactivatedKeys={deactivatedKeys}
             />
           </div>
+          <div>hola</div>
         </>
       ) : (
         <p>Loading word of the day...</p>
