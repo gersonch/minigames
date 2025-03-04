@@ -25,7 +25,7 @@ export function KeyboardAhorcado({
     if (allCorrect) {
       setIsWinner(true);
     }
-  }, [letterStatus]);
+  }, [letterStatus, word]);
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
