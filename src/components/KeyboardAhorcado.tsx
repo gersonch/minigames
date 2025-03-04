@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useWord } from "../store/useWord";
 
 export function KeyboardAhorcado({
   onLetterClick,
@@ -10,7 +11,7 @@ export function KeyboardAhorcado({
 }) {
   const tries = 7;
   const letters = "abcdefghijklmnñopqrstuvwxyz".split("");
-  const word = "ayudame";
+  const word = useWord((state) => state.word);
 
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
   const [isWinner, setIsWinner] = useState<boolean>(false);

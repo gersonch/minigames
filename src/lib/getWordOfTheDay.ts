@@ -3,5 +3,5 @@ export async function getWordOfTheDay() {
     "https://minigames-back.vercel.app/wordOfTheDay"
   );
   const data = await response.json();
-  return data;
+  return data.word;
 }
