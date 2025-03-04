@@ -8,7 +8,7 @@ export function Ahorcado() {
   const { data, isLoading, error } = useWordQuery();
   const word = useWord((state) => state.word);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const wordArray = word ? word.split("") : [];
+  const wordArray: string[] = word ? word.split("") : [];
 
   const getInitialLetterStatus = () => {
     const savedStatus = localStorage.getItem("letterStatus");

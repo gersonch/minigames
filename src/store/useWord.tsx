@@ -1,6 +1,11 @@
 import { create } from "zustand";
 
-export const useWord = create((set) => ({
+interface WordState {
+  word: string;
+  setWord: (newWord: string) => void;
+}
+
+export const useWord = create<WordState>((set) => ({
   word: "",
   setWord: (newWord: string) => set({ word: newWord }),
 }));
