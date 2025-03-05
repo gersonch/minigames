@@ -39,6 +39,7 @@ export function Ahorcado() {
         localStorage.removeItem("selectedLetter");
         setLetterStatus({});
         setSelectedLetter([]);
+        window.location.reload();
       }
     }
   }, [data]); // Se ejecuta solo cuando `data` cambia
