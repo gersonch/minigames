@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getWordOfTheDay } from "./getWordOfTheDay";
+import { getWordForAHalfHour } from "./getWordOfTheDay";
 import { useWord } from "../store/useWord";
 import { useEffect } from "react";
 
@@ -8,7 +8,7 @@ export function useWordQuery() {
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["word"],
-    queryFn: getWordOfTheDay,
+    queryFn: getWordForAHalfHour,
   });
   useEffect(() => {
     if (data && typeof data === "string") {
