@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Body } from "../components/Body";
 import { KeyboardAhorcado } from "../components/KeyboardAhorcado";
 import { useEffect, useState } from "react";
@@ -5,9 +6,8 @@ import { useWord } from "../store/useWord";
 import { useWordQuery } from "../lib/wordQuery";
 
 export function Ahorcado() {
-  const { data, isLoading, error } = useWordQuery();
+  const { isLoading, error } = useWordQuery();
   const word = useWord((state) => state.word);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const wordArray: string[] = word ? word.split("") : [];
 
   const getInitialLetterStatus = () => {
@@ -23,24 +23,28 @@ export function Ahorcado() {
   const [letterStatus, setLetterStatus] = useState<Record<string, boolean>>(
     getInitialLetterStatus
   );
+
   const [selectedLetter, setSelectedLetter] =
     useState<string[]>(getSelectedLetter);
 
   useEffect(() => {
     const savedWord = localStorage.getItem("word");
 
-    if (savedWord && word !== word) {
-      localStorage.clear(); // 🧹 Borra todo el almacenamiento
-      localStorage.setItem("word", word); // Guarda la nueva palabra
+    // Si la palabra guardada no existe o es distinta a la nueva, reseteamos el almacenamiento
+    if (savedWord !== word) {
+      console.log("🔄 Nueva palabra detectada. Reiniciando localStorage...");
+      localStorage.clear();
+      localStorage.setItem("word", word);
       setLetterStatus({});
       setSelectedLetter([]);
-      window.location.reload(); // Recarga la página
     }
-  }, [word]);
+  }, []);
+
   useEffect(() => {
     localStorage.setItem("letterStatus", JSON.stringify(letterStatus));
     localStorage.setItem("selectedLetter", JSON.stringify(selectedLetter));
-  }, [wordArray, letterStatus, selectedLetter]);
+    console.log(selectedLetter);
+  }, [letterStatus, selectedLetter]);
 
   const onLetterClick = (letter: string): boolean => {
     setSelectedLetter((prevLetters) => [...prevLetters, letter]);
@@ -63,7 +67,7 @@ export function Ahorcado() {
   if (isLoading) return <div>Cargando...</div>;
   if (error) return <div>Error: {error.message}</div>;
   if (!word) return <div>No se pudo cargar la palabra.</div>;
-  console.log(data);
+
   return (
     <section className="flex justify-between w-full">
       <div className="flex flex-col items-center px-10">
@@ -95,6 +99,7 @@ export function Ahorcado() {
           onLetterClick={onLetterClick}
           letterStatus={letterStatus} // Ahora pasamos letterStatus
           allLettersGuessed={allLettersGuessed}
+          word={word}
         />
       </div>
     </section>

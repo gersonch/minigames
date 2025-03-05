@@ -4,7 +4,7 @@ export function Sidebar() {
   const paths = [
     { name: "Wordle", path: "/" },
     { name: "El Ahorcado", path: "/ahorcado" },
-    { name: "Tateti", path: "/tateti" },
+    { name: "Conecta 4", path: "/conecta-4" },
   ];
   return (
     <aside
