@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
-import { useWord } from "../store/useWord";
 
 export function KeyboardAhorcado({
   onLetterClick,
   letterStatus,
+  word,
 }: {
   onLetterClick: (letter: string) => boolean;
   letterStatus: Record<string, boolean>;
   allLettersGuessed: boolean;
+  word: string;
 }) {
   const tries = 7;
   const letters = "abcdefghijklmnñopqrstuvwxyz".split("");
-  const word = useWord((state) => state.word);
 
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
   const [isWinner, setIsWinner] = useState<boolean>(false);
