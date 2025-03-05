@@ -28,6 +28,7 @@ export function Ahorcado() {
     useState<string[]>(getSelectedLetter);
 
   useEffect(() => {
+    localStorage.setItem("word", word);
     const savedWord = localStorage.getItem("word");
 
     // Si la palabra guardada no existe o es distinta a la nueva, reseteamos el almacenamiento

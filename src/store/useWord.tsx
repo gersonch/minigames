@@ -6,6 +6,6 @@ interface WordState {
 }
 
 export const useWord = create<WordState>((set) => ({
-  word: "hola",
+  word: "",
   setWord: (newWord: string) => set({ word: newWord }),
 }));
