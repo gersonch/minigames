@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { Body } from "../components/Body";
 import { KeyboardAhorcado } from "../components/KeyboardAhorcado";
 import { useEffect, useState } from "react";
@@ -6,7 +5,7 @@ import { useWord } from "../store/useWord";
 import { useWordQuery } from "../lib/wordQuery";
 
 export function Ahorcado() {
-  const { isLoading, error } = useWordQuery();
+  const { data, isLoading, error } = useWordQuery();
   const word = useWord((state) => state.word);
   const wordArray: string[] = word ? word.split("") : [];
 
@@ -28,18 +27,21 @@ export function Ahorcado() {
     useState<string[]>(getSelectedLetter);
 
   useEffect(() => {
-    localStorage.setItem("word", word);
-    const savedWord = localStorage.getItem("word");
+    if (data) {
+      // Solo ejecutamos cuando data tiene valor válido
 
-    // Si la palabra guardada no existe o es distinta a la nueva, reseteamos el almacenamiento
-    if (savedWord !== word) {
-      console.log("🔄 Nueva palabra detectada. Reiniciando localStorage...");
-      localStorage.clear();
-      localStorage.setItem("word", word);
-      setLetterStatus({});
-      setSelectedLetter([]);
+      const savedWord = localStorage.getItem("word");
+
+      // Si la palabra guardada no existe o es distinta a la nueva, reseteamos el almacenamiento
+      if (savedWord !== data) {
+        localStorage.setItem("word", data);
+        localStorage.removeItem("letterStatus");
+        localStorage.removeItem("selectedLetter");
+        setLetterStatus({});
+        setSelectedLetter([]);
+      }
     }
-  }, []);
+  }, [data]); // Se ejecuta solo cuando `data` cambia
 
   useEffect(() => {
     localStorage.setItem("letterStatus", JSON.stringify(letterStatus));
